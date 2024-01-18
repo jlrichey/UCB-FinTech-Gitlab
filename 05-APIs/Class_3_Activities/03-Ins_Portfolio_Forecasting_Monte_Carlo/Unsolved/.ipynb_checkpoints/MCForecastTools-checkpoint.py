@@ -116,7 +116,8 @@ class MCSimulation:
             sim_df = sim_df.dot(self.weights)
     
             # Calculate the normalized, cumulative return series
-            portfolio_cumulative_returns[n] = (1 + sim_df.fillna(0)).cumprod()
+            # portfolio_cumulative_returns[n] = (1 + sim_df.fillna(0)).cumprod()
+            portfolio_cumulative_returns[n] = (1 + pd.concat([sim_df], axis=1).fillna(0)).cumprod()
            
 
         

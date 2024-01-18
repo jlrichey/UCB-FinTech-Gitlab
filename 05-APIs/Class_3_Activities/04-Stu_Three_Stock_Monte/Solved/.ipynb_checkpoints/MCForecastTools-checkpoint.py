@@ -88,8 +88,6 @@ class MCSimulation:
         
         # Initialize empty Dataframe to hold simulated prices
         portfolio_cumulative_returns = pd.DataFrame()
-        # Replace the line that triggers the warning with this code
-
         
         # Run the simulation of projecting stock prices 'nSim' number of times
         for n in range(self.nSim):
@@ -118,8 +116,6 @@ class MCSimulation:
             # Calculate the normalized, cumulative return series
             # portfolio_cumulative_returns[n] = (1 + sim_df.fillna(0)).cumprod()
             portfolio_cumulative_returns[n] = (1 + pd.concat([sim_df], axis=1).fillna(0)).cumprod()
-           
-
         
         # Set attribute to use in plotting
         self.simulated_return = portfolio_cumulative_returns
@@ -171,7 +167,8 @@ class MCSimulation:
         if not isinstance(self.simulated_return,pd.DataFrame):
             self.calc_cumulative_return()
             
-        metrics = self.simulated_return.iloc[-1].describe()
+        metrics = self.simulated_return.iloc[-1].describe() 
         ci_series = self.confidence_interval
         ci_series.index = ["95% CI Lower","95% CI Upper"]
-        return metrics.append(ci_series)
+        result_series = metrics.append(ci_series)
+        return result_series
