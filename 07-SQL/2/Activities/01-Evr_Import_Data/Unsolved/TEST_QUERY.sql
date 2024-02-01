@@ -1,220 +1,66 @@
-DROP TABLE IF EXISTS payments;
-DROP TABLE IF EXISTS banks;
-CREATE TABLE payments (
-  payment_id SERIAL PRIMARY KEY,
-  bank_number BIGINT,
-  bank_routing_number BIGINT,
-  customer_id INT
-);
-CREATE TABLE banks (
-  bank_id SERIAL PRIMARY KEY,
-  bank_name VARCHAR(50),
-  bank_routing_number BIGINT
-);
--- BONUS
-DROP TABLE IF EXISTS customer;
-CREATE TABLE customer (
-  customer_id SERIAL PRIMARY KEY,
-  first_name VARCHAR(30) NOT NULL,
-  last_name VARCHAR(30),
-  gender VARCHAR(30),
-  age INT,
-  address VARCHAR(50),
-  city VARCHAR(50),
-  state CHAR(2),
-  zip_code CHAR(5)
+DROP TABLE IF EXISTS employee_normalization;
+DROP TABLE IF EXISTS first_nf_employee;
+DROP TABLE IF EXISTS second_nf_employee;
+DROP TABLE IF EXISTS second_nf_employee_email;
+DROP TABLE IF EXISTS third_nf_employee;
+DROP TABLE IF EXISTS third_nf_zipcode;
+
+CREATE TABLE employee_normalization (
+	employee_id INT,
+	name VARCHAR(255),
+	age INT,
+	address VARCHAR(255),
+	city VARCHAR(255),
+	state VARCHAR(255),
+	zip_code INT,
+	email VARCHAR(255)
 );
 
 
-
--- Perform an INNER JOIN
-select
-  *
-from payments as a
-INNER JOIN banks as b ON a.bank_routing_number = b.bank_routing_number;
--- Perform a LEFT JOIN
-select
-  *
-from payments as a
-LEFT JOIN banks as b ON a.bank_routing_number = b.bank_routing_number;
--- Perform a RIGHT JOIN
-select
-  *
-from payments as a
-RIGHT JOIN banks as b ON a.bank_routing_number = b.bank_routing_number;
--- Perform a FULL OUTER JOIN
-select
-  *
-from payments as a FULL
-OUTER JOIN banks as b ON a.bank_routing_number = b.bank_routing_number;
--- Perform a CROSS JOIN
-select
-  *
-from payments
-CROSS JOIN banks;
--- BONUS
-select
-  a.payment_id,
-  a.bank_number,
-  a.bank_routing_number,
-  b.bank_name,
-  c.first_name,
-  c.last_name
-from payments as a
-INNER JOIN banks as b ON a.bank_routing_number = b.bank_routing_number
-INNER JOIN customer as c ON a.customer_id = c.customer_id;
-
-
-
-
-
-DROP TABLE IF EXISTS actor;
-DROP TABLE IF EXISTS address;
-DROP TABLE IF EXISTS city;
-DROP TABLE IF EXISTS country;
-DROP TABLE IF EXISTS customer;
-DROP TABLE IF EXISTS customer_list;
-DROP TABLE IF EXISTS film;
-DROP TABLE IF EXISTS film_actor;
-DROP TABLE IF EXISTS inventory;
-DROP TABLE IF EXISTS payment;
-DROP TABLE IF EXISTS rental;
-DROP TABLE IF EXISTS staff;
-DROP TABLE IF EXISTS store;
-
-
-CREATE TABLE actor (
-  actor_id integer NOT NULL,
-  first_name character varying(45) NOT NULL,
-  last_name character varying(45) NOT NULL,
-  last_update timestamp without time zone DEFAULT now() NOT NULL
+CREATE TABLE first_nf_employee
+(
+	employee_id INT,
+	name VARCHAR(255),
+	age INT,
+	address VARCHAR(255),
+	city VARCHAR(255),
+	state VARCHAR(255),
+	zip_code INT,
+	email VARCHAR(255)
 );
 
-CREATE TABLE address (
-  address_id integer NOT NULL,
-  address character varying(50) NOT NULL,
-  address2 character varying(50),
-  district character varying(20) NOT NULL,
-  city_id smallint NOT NULL,
-  postal_code character varying(10),
-  phone character varying(20) NOT NULL,
-  last_update timestamp without time zone DEFAULT now() NOT NULL
+CREATE TABLE second_nf_employee
+(
+	employee_id INT PRIMARY KEY,
+	name VARCHAR(255),
+	age INT,
+	address VARCHAR(255),
+	city VARCHAR(255),
+	state VARCHAR(255),
+	zip_code INT
+);
+SELECT * FROM employee_normalization;
+SELECT * FROM second_nf_employee_email;
+CREATE TABLE second_nf_employee_email
+(
+	email_id INT PRIMARY KEY,
+	employee_id INT,
+	email VARCHAR(255)
+);
+SELECT * FROM third_nf_employee;
+CREATE TABLE third_nf_employee
+(
+	employee_id INT PRIMARY KEY,
+	name VARCHAR(255),
+	age INT,
+	address VARCHAR(255),
+	zip_code INT
 );
 
-CREATE TABLE city (
-  city_id integer NOT NULL,
-  city character varying(50) NOT NULL,
-  country_id smallint NOT NULL,
-  last_update timestamp without time zone DEFAULT now() NOT NULL
+SELECT * FROM third_nf_zipcode;
+CREATE TABLE third_nf_zipcode
+(
+	zip_code INT PRIMARY KEY,
+	city VARCHAR(255),
+	state VARCHAR(255)
 );
-
-CREATE TABLE country (
-    country_id integer NOT NULL,
-    country character varying(50) NOT NULL,
-    last_update timestamp without time zone DEFAULT now() NOT NULL
-);
-
-CREATE TABLE customer (
-  customer_id integer NOT NULL,
-  store_id smallint NOT NULL,
-  first_name character varying(45) NOT NULL,
-  last_name character varying(45) NOT NULL,
-  email character varying(50),
-  address_id smallint NOT NULL,
-  activebool boolean DEFAULT true NOT NULL,
-  create_date date DEFAULT ('now'::text)::date NOT NULL,
-  last_update timestamp without time zone DEFAULT now(),
-  active integer
-);
-
-CREATE TABLE customer_list (
-  id integer NOT NULL,
-  name character varying(50) NOT NULL,
-  address character varying(50) NOT NULL,
-  zip_code character varying(10),
-  phone character varying(20) NOT NULL,
-  city character varying(50) NOT NULL,
-  country character varying(50) NOT NULL,
-  notes character varying(50) NOT NULL,
-  sid integer NOT NULL
-);
-
-CREATE TABLE film (
-  film_id integer NOT NULL,
-  title character varying(255) NOT NULL,
-  description text,
-  release_year integer,
-  language_id smallint NOT NULL,
-  original_language_id smallint,
-  rental_duration smallint DEFAULT 3 NOT NULL,
-  rental_rate numeric(4,2) DEFAULT 4.99 NOT NULL,
-  length smallint,
-  replacement_cost numeric(5,2) DEFAULT 19.99 NOT NULL,
-  rating TEXT,
-  last_update timestamp without time zone DEFAULT now() NOT NULL,
-  special_features text[],
-  fulltext tsvector NOT NULL
-);
-
-CREATE TABLE film_actor (
-  actor_id smallint NOT NULL,
-  film_id smallint NOT NULL,
-  last_update timestamp without time zone DEFAULT now() NOT NULL
-);
-
-CREATE TABLE inventory (
-  inventory_id integer NOT NULL,
-  film_id smallint NOT NULL,
-  store_id smallint NOT NULL,
-  last_update timestamp without time zone DEFAULT now() NOT NULL
-);
-
-CREATE TABLE payment (
-  payment_id integer NOT NULL,
-  customer_id smallint NOT NULL,
-  staff_id smallint NOT NULL,
-  rental_id integer NOT NULL,
-  amount numeric(5,2) NOT NULL,
-  payment_date timestamp without time zone NOT NULL
-);
- 
-CREATE TABLE rental (
-  rental_id integer NOT NULL,
-  rental_date timestamp without time zone NOT NULL,
-  inventory_id integer NOT NULL,
-  customer_id smallint NOT NULL,
-  return_date timestamp without time zone,
-  staff_id smallint NOT NULL,
-  last_update timestamp without time zone DEFAULT now() NOT NULL
-);
-
-CREATE TABLE staff (
-  staff_id integer NOT NULL,
-  first_name character varying(45) NOT NULL,
-  last_name character varying(45) NOT NULL,
-  address_id smallint NOT NULL,
-  email character varying(50),
-  store_id smallint NOT NULL,
-  active boolean DEFAULT true NOT NULL,
-  username character varying(16) NOT NULL,
-  password character varying(40),
-  last_update timestamp without time zone DEFAULT now() NOT NULL,
-  picture bytea
-);
-
-CREATE TABLE store (
-    store_id integer NOT NULL,
-    manager_staff_id smallint NOT NULL,
-    address_id smallint NOT NULL,
-    last_update timestamp without time zone DEFAULT now() NOT NULL
-);
-
-
-
-
-
-
-
-
-
-
