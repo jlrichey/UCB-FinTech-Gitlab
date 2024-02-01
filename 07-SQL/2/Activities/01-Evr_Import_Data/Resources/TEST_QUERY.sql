@@ -205,6 +205,58 @@ WHERE film_id IN
 );
 
 
+-- 1. Find the customer first and last names of those who have made payments.
+
+SELECT first_name, last_name
+FROM customer
+WHERE customer_id IN
+(
+	SELECT customer_id
+	FROM payment
+);
 
 
+-- 2. Find the staff email addresses of those who have helped customers make payments.
 
+SELECT emial
+FROM staff_id IN
+(
+	FROM staff_id)
+
+
+-- 3. Find the rental records of all films that have been rented out and paid for.
+
+
+-- BONUS
+
+
+SELECT * 
+FROM payment
+WHERE customer_id IN
+(
+	SELECT first_name
+	FROM customer
+	WHERE customer_ID = 
+);
+
+SELECT * FROM customer
+
+
+SELECT c.last_name, c.first_name
+FROM customer as c
+JOIN payment as p
+ON (c.customer_id = p.customer_id)
+-- WHERE f.title = 'ALABAMA DEVIL'
+;
+
+
+CREATE VIEW Rental_Movies AS
+SELECT *
+FROM rental
+WHERE rental_id IN
+(
+SELECT rental_id
+FROM payment
+);
+
+SELECT * FROM Rental_Movies
